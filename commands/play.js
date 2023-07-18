@@ -1,35 +1,25 @@
-//Discord-Player
 const { SlashCommandBuilder } = require('discord.js');
-const { useMainPlayer } = require('discord-player');
+const { useQueue } = require('discord-player');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('Plays a song from a url.')
-        .addStringOption((option) => option.setName('query').setDescription('Search query or URL').setRequired(true)),
+        .setDescription('Continues current audio playback.'),
 
     async execute(interaction) {
-
         const channel = interaction.member.voice.channel;
+        const queue = useQueue(interaction.guild.id);
 
         if (!channel) return interaction.reply('You are not connected to a voice channel!');
-
-        const player = useMainPlayer();
-        const query = interaction.options.getString('query', true);
+        if (!queue) return interaction.reply('Queue empty/Bot is idle!');
 
         await interaction.deferReply();
 
         try {
-            const { track } = await player.play(channel, query, {
-                nodeOptions: {
-                    metadata: interaction
-                }
-            });
-
-            return interaction.followUp(`**${track.title}** added!`);
-
+            queue.node.setPaused(false);
+            return interaction.followUp('Resuming playback!');
         } catch (e) {
-            return interaction.followUp(`Something went wrong: ${e}`)
+            return interaction.followUp(`Something went wrong: ${e}`);
         }
     }
 }
