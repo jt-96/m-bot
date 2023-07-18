@@ -5,9 +5,16 @@ const path = require('node:path');
 
 //Require the necessary discord.js classes
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Player } = require('discord-player');
 
 //Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, 'GuildVoiceStates'] });
+
+//Entrypoint for discord-player based application.
+const player = new Player(client);
+
+//Load all the extractors from discord-player package.
+player.extractors.loadDefault();
 
 //Collecting commands
 client.commands = new Collection();
