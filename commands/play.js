@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { useQueue } = require('discord-player');
+const { useQueue, useMainPlayer } = require('discord-player');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,8 +16,18 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            queue.node.setPaused(false);
-            return interaction.followUp('Resuming playback!');
+
+            if (queue.isPlaying()) {
+
+                return interaction.followUp('Playback already ongoing!');
+                
+            } else {
+
+                await queue.connect(channel);
+                await queue.node.play();
+                return interaction.followUp(`Starting playback!`);
+            }
+
         } catch (e) {
             return interaction.followUp(`Something went wrong: ${e}`);
         }
