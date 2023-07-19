@@ -1,6 +1,6 @@
 //Discord-Player
 const { SlashCommandBuilder } = require('discord.js');
-const { useMainPlayer } = require('discord-player');
+const { useMainPlayer, useQueue } = require('discord-player');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,22 +11,19 @@ module.exports = {
     async execute(interaction) {
 
         const channel = interaction.member.voice.channel;
-
         if (!channel) return interaction.reply('You are not connected to a voice channel!');
 
         const player = useMainPlayer();
+        const queue = player.nodes.create(channel);
         const query = interaction.options.getString('query', true);
 
         await interaction.deferReply();
 
         try {
-            const { track } = await player.play(channel, query, {
-                nodeOptions: {
-                    metadata: interaction
-                }
-            });
 
-            return interaction.followUp(`**${track.title}** added!`);
+            const searchResult = await player.search(query, { requestedBy: interaction.user });
+            queue.addTrack(searchResult.tracks[0]);
+            return interaction.followUp(`**${queue.tracks.toArray()[queue.tracks.toArray().length - 1].author} - ${queue.tracks.toArray()[queue.tracks.toArray().length - 1].title}** added!`);
 
         } catch (e) {
             return interaction.followUp(`Something went wrong: ${e}`)
