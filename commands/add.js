@@ -22,8 +22,17 @@ module.exports = {
         try {
 
             const searchResult = await player.search(query, { requestedBy: interaction.user });
-            queue.addTrack(searchResult.tracks[0]);
-            return interaction.followUp(`**${queue.tracks.toArray()[queue.tracks.toArray().length - 1].author} - ${queue.tracks.toArray()[queue.tracks.toArray().length - 1].title}** added!`);
+
+            if (searchResult.hasPlaylist()) {
+
+                queue.addTrack(searchResult.playlist);
+                return interaction.followUp(`Playlist **${searchResult.playlist.title}** added!`);
+
+            } else {
+
+                queue.addTrack(searchResult.tracks[0]);
+                return interaction.followUp(`**${queue.tracks.toArray()[queue.tracks.toArray().length - 1].author} - ${queue.tracks.toArray()[queue.tracks.toArray().length - 1].title}** added!`);
+            }
 
         } catch (e) {
             return interaction.followUp(`Something went wrong: ${e}`)
