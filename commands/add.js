@@ -21,14 +21,14 @@ module.exports = {
 
         try {
 
-            const searchResult = await player.search(query, { requestedBy: interaction.user });
+            const searchResult = await player.search(query, { requestedBy: interaction.user, searchEngine: 'youtubeSearch' });
 
             if (searchResult.hasPlaylist()) {
 
                 queue.addTrack(searchResult.playlist);
                 return interaction.followUp(`Playlist **${searchResult.playlist.title}** added!`);
 
-            } else {
+            } else if (searchResult.hasTracks()) {
 
                 queue.addTrack(searchResult.tracks[0]);
                 return interaction.followUp(`**${queue.tracks.toArray()[queue.tracks.toArray().length - 1].author} - ${queue.tracks.toArray()[queue.tracks.toArray().length - 1].title}** added!`);
