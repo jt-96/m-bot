@@ -14,7 +14,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, 'GuildVoiceState
 const player = new Player(client);
 
 //Load all the extractors from discord-player package.
-player.extractors.loadDefault();
+player.extractors.loadDefault((ext) => ext === 'YouTubeExtractor');
 
 //Collecting commands
 client.commands = new Collection();
